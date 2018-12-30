@@ -37,7 +37,7 @@ Don't forget to update your `/etc/hosts` file to include references to your host
 127.0.0.1 local.{applicationName}.app           // reference to the application instance (php/nginx)
 127.0.0.1 local.{applicationName}.sql           // reference to the mysql instance
 
-* VERY MUCH A WORK IN PROGRESS *
+**VERY MUCH A WORK IN PROGRESS**
 
 
 
