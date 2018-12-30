@@ -1,7 +1,7 @@
 version: "3.6"
 
 networks:
-  storygen: {}
+  frontend: {}
 
 services:
 
@@ -21,7 +21,7 @@ services:
     ports:
       - "${MYSQL_PORT}:3306"
     networks:
-      - storygen
+      - frontend
 
   webserver:
     image: nginx:alpine
@@ -34,7 +34,7 @@ services:
     ports:
      - "${APP_PORT}:80"
     networks:
-      - storygen
+      - frontend
                 
   php-fpm:
     build: ./php-fpm
@@ -44,7 +44,7 @@ services:
       - ..:/application
       - ./php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
     networks:
-      - storygen
+      - frontend
     
 
   # mailcatcher:
