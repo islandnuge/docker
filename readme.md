@@ -32,6 +32,11 @@ Log files will be remapped to:
 
 `/storage/logs`
 
+Don't forget to update your `/etc/hosts` file to include references to your hostname you wish to use for local development - ie I currently use:
+
+127.0.0.1 local.{applicationName}.app           // reference to the application instance (php/nginx)
+127.0.0.1 local.{applicationName}.sql           // reference to the mysql instance
+
 * VERY MUCH A WORK IN PROGRESS *
 
 
