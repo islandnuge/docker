@@ -1,0 +1,58 @@
+version: "3.6"
+
+networks:
+  storygen: {}
+
+services:
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    working_dir: /application
+    volumes:
+      - ../storage/database:/var/lib/mysql
+      - ..:/application
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      
+    ports:
+      - "${MYSQL_PORT}:3306"
+    networks:
+      - storygen
+
+  webserver:
+    image: nginx:alpine
+    container_name: nginx
+    working_dir: /application
+    volumes:
+        - ..:/application
+        - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+        - ../storage/logs/nginx:/var/log/nginx/
+    ports:
+     - "${APP_PORT}:80"
+    networks:
+      - storygen
+                
+  php-fpm:
+    build: ./php-fpm
+    container_name: php-server
+    working_dir: /application
+    volumes:
+      - ..:/application
+      - ./php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
+    networks:
+      - storygen
+    
+
+  # mailcatcher:
+  #   image: jeanberu/mailcatcher
+  #   container_name: mailcatcher
+  #   restart: always
+  #   ports:
+  #     - "1025:1025"
+  #     - "1080:1080"
+
+
