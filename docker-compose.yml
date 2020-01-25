@@ -1,16 +1,18 @@
-version: "3.6"
+version: "3.7"
+
 
 networks:
-  frontend: {}
+  elastic:
+    driver: bridge
 
 services:
 
   mysql:
-    image: mysql:5.7
+    image: mysql:latest
     container_name: mysql
     working_dir: /application
     volumes:
-      - ../storage/database:/var/lib/mysql
+      - ${DOCKER_STORAGE_PATH}/database:/var/lib/mysql
       - ..:/application
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -21,7 +23,7 @@ services:
     ports:
       - "${MYSQL_PORT}:3306"
     networks:
-      - frontend
+      - elastic
 
   webserver:
     image: nginx:alpine
@@ -30,11 +32,12 @@ services:
     volumes:
         - ..:/application
         - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-        - ../storage/logs/nginx:/var/log/nginx/
+        - ${DOCKER_STORAGE_PATH}/logs/nginx:/var/log/nginx/
     ports:
      - "${APP_PORT}:80"
+     - "${APP_SSL_PORT}:443"
     networks:
-      - frontend
+      - elastic
                 
   php-fpm:
     build: ./php-fpm
@@ -42,9 +45,41 @@ services:
     working_dir: /application
     volumes:
       - ..:/application
-      - ./php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
+      - ./php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
     networks:
-      - frontend
+      - elastic
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: ${ELASTICSEARCH_HOSTNAME}
+    hostname: ${ELASTICSEARCH_HOSTNAME}
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - cluster.initial_master_nodes=elasticsearch
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - ${ELASTICSEARCH_PORT}:9200
+    networks:
+      - elastic
+          
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.5.2
+    container_name: ${KIBANA_HOSTNAME}
+    hostname: ${KIBANA_HOSTNAME}
+    ports:
+    environment:
+      ELASTICSEARCH_URL: http://${ELASTICSEARCH_HOSTNAME}:${ELASTICSEARCH_PORT}
+      ELASTICSEARCH_HOSTS: http://${ELASTICSEARCH_HOSTNAME}:${ELASTICSEARCH_PORT}
+    ports:
+      - ${KIBANA_PORT}:5601
+    networks:
+      - elastic
+    
     
 
   # mailcatcher:
