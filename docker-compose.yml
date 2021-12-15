@@ -1,4 +1,8 @@
-version: "3.7"
+# On setup
+#  - Search and replace networkname with your preferred local network name
+#  - remember that database parameters are referenced in the parent .env file (symlinked)
+
+version: "3.8"
 networks:
   networkname:
     driver: bridge
@@ -9,15 +13,15 @@ services:
     container_name: mysql
     working_dir: /application
     volumes:
-      - ../storage/database:/var/lib/mysql
+      - ../.local_storage:/var/lib/mysql
       - ..:/application
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
     ports:
-      - "${MYSQL_PORT}:3306"
+      - "${DB_PORT}:3306"
     networks:
       - networkname
   webserver:
