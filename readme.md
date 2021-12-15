@@ -1,43 +1,56 @@
 # frontalnugity/docker
+A generic docker configuration for all web projects intended for sterotypical web app development in Laravel under a TALL stack.
 
-## Overview
-
-My attempt at creating a standard, generic docker configuration which is to be used in each web application we develop.
-
-Still very  much learning Docker and its dependencies, please feel free to provide feedback and guidance if you see anything that can be improved.
-
-Feel free to fork if you see any value!
-
-## Loadout:
-
+## Dependencies:
 Intended as a clean setup for typical laravel/php development:
-
 - Nginx
-- MySQL
-- PHP 7.
+- MySQL 8.0
+- PHP 8.
 
 ## Installation / Usage
+Clone it into your project as `/docker` using the command below and modify the configuration files per your preference.
 
-For each web project clone it into your project as `/docker` and modify the configuration files per your preference.
+```bash
+git clone git@github.com:frontalnugity/docker
+```
 
-Setup assumes that your working directory for your web-app will be:
+This will include the docker config as a sub-module to your project. If you wish to add it to your parent github repo as just code, you can disconnect the submodule dependency by running
 
-`/application`
+```bash
+rm -rf .git
+```
 
-and that persistent data will be created/stored in:
+Database and mysql settings are specified in .env. If you are using this in a Laravel environment, run the following command to update the env settings to reference values in your laravel .env
 
-`/storage/db`
+```bash
+rm .env; 
+ln -s ../.env .env;
+```
 
-Log files will be remapped to:
+The `docker-compose.yml` file uses a generic network name, prior to running `docker compose up` it is recommend you replace qq`networkname` with a more descriptive name for your project.
 
-`/storage/logs`
+Setup assumes that your working directory (inside your containers) for your web-app will be:
+```bash
+/application
+```
+
+Persistent data (MySql, associated logs ) will be created/stored in:
+```bash
+/.local_docker
+```
+Application Log files will be remapped to:
+```bash
+/storage/logs
+```
 
 Don't forget to update your `/etc/hosts` file to include references to your hostname you wish to use for local development - ie I currently use:
-
-127.0.0.1 local.{applicationName}.app           // reference to the application instance (php/nginx)
-127.0.0.1 local.{applicationName}.sql           // reference to the mysql instance
+```bash
+127.0.0.1 local.{applicationName}.{tld}           // reference to the application instance (php/nginx)
+127.0.0.1 local.{applicationName}.mysql           // reference to the mysql instance
+```
+## Summary
 
 **VERY MUCH A WORK IN PROGRESS**
 
-
+Please feel free to provide feedback and guidance if you see anything that can be improved. Feel free to fork if you see any value!
 
